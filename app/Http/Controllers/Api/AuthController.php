@@ -29,6 +29,13 @@ class AuthController extends Controller
             'password' => Hash::make($request->input('password')),
             // 'notification_token' => $request->input('notification_token'),
         ]);
+        
+        // TODO: Remove this fix
+        $mc = Merchant::findOrFail(1);
+        $user->createWallet([
+            'name' => $user->last_name . ' ' . $user->first_name . ' - ' . $mc->business_name,
+            'slug' => $user->id.'-'.$mc->id,
+        ]);
 
         $accessToken = $user->createToken('harbinAuthToken')->accessToken;
 

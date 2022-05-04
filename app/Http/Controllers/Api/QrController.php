@@ -11,13 +11,15 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class QrController extends Controller
 {
     public function generateQrCodeUser(Request $request) {
-        // request()->validate([
-        //     'user_id' => 'required|exists:users,id',
-        // ]);
+        if(!$request->headers->has('user_id')) {
+            return response()->json([
+                'message' => 'User ID is required.'
+            ], 400);
+        }
 
-        $validity = Carbon::now('UTC')->addMinutes(30);
-        $user = User::findOrFail(1);
-        $message = 'id:'.'1'.';name:'.$user->name.';expires_at:'.$validity->getTimestampMs();
+        $validity = Carbon::now('UTC')->addSeconds(180);
+        $user = User::findOrFail($request->header('user_id'));
+        $message = 'id:'.$request->header('user_id').';name:'.$user->name.';expires_at:'.$validity->getTimestampMs();
         $checksum = crc32($message);
         $message = $message.';checksum:'.$checksum;
         

@@ -80,5 +80,17 @@ class DatabaseSeeder extends Seeder
             'name' => $kcU->last_name . ' ' . $kcU->first_name . ' - ' . $mc->business_name,
             'slug' => $kcU->id.'-'.$mc->id,
         ]);
+
+        $jdc = User::create([
+            'first_name' => 'Juan',
+            'last_name' => 'dela Cruz',
+            'email' => 'juandelacruz@moveup.app',
+            'password' => Hash::make('password'),
+        ]);
+
+        $jdc->createWallet([
+            'name' => $jdc->last_name . ' ' . $jdc->first_name . ' - ' . $mc->business_name,
+            'slug' => $jdc->id.'-'.$mc->id,
+        ]);
     }
 }
