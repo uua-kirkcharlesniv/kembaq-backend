@@ -11,17 +11,17 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class QrController extends Controller
 {
     public function generateQrCodeUser(Request $request) {
-        request()->validate([
-            'user_id' => 'required|exists:users,id',
-        ]);
+        // request()->validate([
+        //     'user_id' => 'required|exists:users,id',
+        // ]);
 
-        $validity = Carbon::now('UTC')->addSeconds(180);
-        $user = User::findOrFail($request->user_id);
-        $message = 'id:'.$request->user_id.';name:'.$user->name.';expires_at:'.$validity->getTimestampMs();
+        $validity = Carbon::now('UTC')->addMinutes(30);
+        $user = User::findOrFail(1);
+        $message = 'id:'.'1'.';name:'.$user->name.';expires_at:'.$validity->getTimestampMs();
         $checksum = crc32($message);
         $message = $message.';checksum:'.$checksum;
         
-        return response(QrCode::size(800)->format('png')->style('round')->errorCorrection('L')->generate($message));
+        return response(QrCode::format('svg')->size(800)->format('png')->style('round')->errorCorrection('L')->generate($message));
     }
 
     public function generateQrCodeMerchant(Request $request) {
@@ -34,7 +34,9 @@ class QrController extends Controller
         $checksum = crc32($message);
         $message = $message.';checksum:'.$checksum;
         
-        return response(QrCode::size(800)->format('png')->style('dot')->eye('circle')->errorCorrection('H')->merge($request->get('merchant')->logo, .3, true)->generate($message));
+        return response()->json([
+            'data' => QrCode::size(800)->format('png')->style('dot')->eye('circle')->errorCorrection('H')->merge($request->get('merchant')->logo, .3, true)->generate($message),
+        ]);
     }
 
     public function validateQrCodeUser(Request $request) {
@@ -48,17 +50,23 @@ class QrController extends Controller
         $reconstructed = 'id:'.$request->id.';name:'.$request->name.';expires_at:'.$request->expires_at;
         $reconstructedChecksum = crc32($reconstructed);
         if($request->checksum != $reconstructedChecksum) {
-            return response('Invalid checksum.', 400);
+            return response()->json([
+                'message' => 'Cannot validate the authenticity of the QR code.'
+            ], 400);
         }
 
         $currentTimeUTC = Carbon::now('UTC');
         $expiryDate = Carbon::createFromTimestampMsUTC($request->expires_at);
         
         if($currentTimeUTC->greaterThanOrEqualTo($expiryDate)) {
-            return response('Code already expired.', 400);
+            return response()->json([
+                'message' => 'Code already expired.'
+            ], 400);
         }
 
-        return response('OK.', 200);
+        return response()->json([
+            'OK.'
+        ], 200);
     }
 
     public function validateQrCodeMerchant(Request $request) {

@@ -44,8 +44,8 @@ Route::group(['middleware' => ['subscribed']], function () {
 });
 
 Route::prefix('qr')->group(function () {
-    Route::post('generate/user', [QrController::class, 'generateQrCodeUser']);
-    Route::post('generate/merchant', [QrController::class, 'generateQrCodeMerchant']);
+    Route::get('generate/user', [QrController::class, 'generateQrCodeUser']);
+    Route::get('generate/merchant', [QrController::class, 'generateQrCodeMerchant']);
     Route::post('validate/user', [QrController::class, 'validateQrCodeUser']);
     Route::post('validate/merchant', [QrController::class, 'validateQrCodeMerchant']);
 });
