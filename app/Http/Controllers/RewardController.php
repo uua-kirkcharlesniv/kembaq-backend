@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reward;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RewardController extends Controller
 {
@@ -13,7 +16,7 @@ class RewardController extends Controller
      */
     public function index()
     {
-        return view('rewards.index');
+        return view('rewards.index')->with('rewards', Reward::where('merchant_id', '=', Auth::user()->merchants()->first()->id)->get());
     }
 
     /**
@@ -23,7 +26,7 @@ class RewardController extends Controller
      */
     public function create()
     {
-        //
+        return view('rewards.create');
     }
 
     /**
@@ -34,7 +37,23 @@ class RewardController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'value' => 'required|numeric|min:1',
+            'days' => 'required|numeric|min:1|max:365'
+        ]);
+
+        Reward::create([
+            'merchant_id' => Auth::user()->merchants()->first()->id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'value' => $request->value,
+            'photo' => 'No photo',
+            'valid_until' => Carbon::now()->utc()->addDays($request->days),
+        ]);
+
+        return redirect()->route('rewards.index');
     }
 
     /**
@@ -79,6 +98,8 @@ class RewardController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Reward::destroy($id);
+
+        return redirect()->route('rewards.index');
     }
 }

@@ -32,6 +32,7 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
+                    @auth
                     <ul class="navbar-nav me-auto">
                         <a href="{{ url('/home') }}" class="text-sm text-gray-700 underline">Dashboard</a>
                         <a href="{{ url('/rewards') }}" class="text-sm text-gray-700 underline">Rewards</a>
@@ -40,6 +41,7 @@
                         <a href="{{ url('/users') }}" class="text-sm text-gray-700 underline">Users</a>
                         <a href="{{ url('/home') }}" class="text-sm text-gray-700 underline">Configure</a>
                     </ul>
+                    @endauth
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
