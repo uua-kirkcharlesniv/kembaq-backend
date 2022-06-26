@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Bavix\Wallet\Models\Transfer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,10 +14,9 @@ class TransactionController extends Controller
      */
     public function index()
     {
+        // $transactions = Transfer::with('deposit', 'to')->where('from_id', '=', Auth::user()->merchants()->first()->id)->get();
         
-        $transactions = Transfer::with('deposit', 'to')->where('from_id', '=', Auth::user()->merchants()->first()->id)->get();
-        
-        return view('transactions.index')->with(['transactions' => $transactions]);
+        return view('transactions.index')->with(['transactions' => []]);
     }
 
     /**
