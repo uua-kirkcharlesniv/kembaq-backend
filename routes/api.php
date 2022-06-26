@@ -18,9 +18,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('register', [AuthController::class, 'register']);
+Route::get('categories', [AuthController::class, 'getCategories']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:api']], function () {
+    Route::post('merchant/profile/create', [AuthController::class, 'createMerchantPage']);
+
     Route::prefix('profile')->group(function () {
         // Route::get('', [AuthController::class, 'getOwnProfile']);
         Route::post('change-password', [AuthController::class, 'changePassword']);
@@ -29,13 +32,6 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 });
 
-Route::group(['middleware' => ['auth:api']], function () {
-    Route::prefix('profile')->group(function () {
-        // Route::get('', [AuthController::class, 'getOwnProfile']);
-        Route::post('change-password', [AuthController::class, 'changePassword']);
-        // Route::post('update', [AuthController::class, 'updateProfile']);
-    });
-});
 Route::group(['middleware' => ['subscribed']], function () {
     Route::prefix('points')->group(function () {
         Route::post('balance', [PointsController::class, 'getBalance']);

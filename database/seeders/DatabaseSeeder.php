@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'Caktiong',
             'email' => 'tonytan.caktiong@jollibee.com',
             'password' => Hash::make('password'),
+            'is_merchant' => true,
         ]);
 
         $mc = Merchant::create([
@@ -74,23 +75,11 @@ class DatabaseSeeder extends Seeder
             ['merchant_id' => 1, 'user_id' => 2]
         ]);
 
-        $mc->deposit(100000);
-
-        $kcU->createWallet([
-            'name' => $kcU->last_name . ' ' . $kcU->first_name . ' - ' . $mc->business_name,
-            'slug' => $kcU->id.'-'.$mc->id,
-        ]);
-
         $jdc = User::create([
             'first_name' => 'Juan',
             'last_name' => 'dela Cruz',
             'email' => 'juandelacruz@moveup.app',
             'password' => Hash::make('password'),
-        ]);
-
-        $jdc->createWallet([
-            'name' => $jdc->last_name . ' ' . $jdc->first_name . ' - ' . $mc->business_name,
-            'slug' => $jdc->id.'-'.$mc->id,
         ]);
     }
 }

@@ -7,13 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use Bavix\Wallet\Traits\HasWallet;
-use Bavix\Wallet\Traits\HasWallets;
-use Bavix\Wallet\Interfaces\Wallet;
 
-class User extends Authenticatable implements Wallet
+class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasWallet, HasWallets;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +23,7 @@ class User extends Authenticatable implements Wallet
         'email',
         'password',
         'photo',
+        'is_merchant'
     ];
 
     /**
@@ -44,16 +42,26 @@ class User extends Authenticatable implements Wallet
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime'
     ];
 
-    protected $appends = ['name'];
+    protected $appends = ['name', 'is_merchant_profile_created'];
 
     public function getNameAttribute() {
         return $this->first_name . ' ' . $this->last_name;
     }
 
     public function merchants() {
-        return $this->belongsToMany(Merchant::class, 'merchant_user', 'user_id', 'merchant_id');
+        return $this->belongsToMany(Merchant::class, 'merchant_user', 'user_id', 'merchant_id')->withPivot('role');
+    }
+
+    public function getIsMerchantAttribute($value) {
+        return $value == 1;
+    }
+
+    public function getIsMerchantProfileCreatedAttribute() {
+        if($this->is_merchant == 0) return false;
+
+        return $this->merchants()->count() > 0;
     }
 }
