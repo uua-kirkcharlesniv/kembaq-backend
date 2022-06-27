@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LedgerController;
 use App\Http\Controllers\Api\MerchantsController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PointsController;
 use App\Http\Controllers\Api\QrController;
 use Illuminate\Http\Request;
@@ -50,6 +51,8 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('subscribed', [MerchantsController::class, 'fetchAllSubscribedMerchants']);
         Route::get('available', [MerchantsController::class, 'fetchAllAvailableMerchants']);
     });
+
+    Route::get('notifications', [NotificationController::class, 'getAllNotifications']);
 });
 
 Route::prefix('qr')->group(function () {

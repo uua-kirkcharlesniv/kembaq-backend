@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Merchant;
+use App\Models\Notification;
 use App\Models\Subscription;
 use App\Models\User;
 use Closure;
@@ -32,6 +33,12 @@ class EnsureUserHasSubscription
                 'merchant_id' => $request->merchant_id,
                 'user_id' => $request->user_id,
                 'balance' => 0,
+            ]);
+            Notification::create([
+                'merchant_id' => $request->merchant_id,
+                'user_id' => $request->user_id,
+                'title' => 'Welcome to ' . $merchant->business_name,
+                'message' => 'Start earning rewards by purchasing items and scanning QR codes!'
             ]);
         }
         $request->attributes->add([
