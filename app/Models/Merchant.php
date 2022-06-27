@@ -11,7 +11,19 @@ class Merchant extends Model
 
     protected $guarded = ['id'];
 
+    protected $appends = [ 'earliest_expiration'];
+
     public function category() {
         return $this->belongsTo(Category::class, 'category', 'id');
+    }
+
+    public function rewards() {
+        return $this->hasMany(Reward::class, 'merchant_id', 'id');
+    }
+
+    public function getEarliestExpirationAttribute() {
+        if($this->rewards->isEmpty()) return null;
+
+        return Reward::where('merchant_id', $this->id)->orderBy('valid_until','ASC')->first()->valid_until;
     }
 }

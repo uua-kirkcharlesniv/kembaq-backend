@@ -92,5 +92,14 @@ class DatabaseSeeder extends Seeder
             'photo' => 'https://cdn.shopify.com/s/files/1/0580/3245/5858/files/CJ_Fam_Deals.jpg?v=1643830712&width=1080',
             'valid_until' => Carbon::now()->utc()->addDays(30),
         ]);
+
+        Reward::create([
+            'merchant_id' => $mc->id,
+            'title' => 'Sample reward 2',
+            'description' => 'Lorem ipsum generic description',
+            'value' => 5,
+            'photo' => 'https://cdn.shopify.com/s/files/1/0580/3245/5858/files/CJ_Fam_Deals.jpg?v=1643830712&width=1080',
+            'valid_until' => Carbon::now()->utc()->addDays(15),
+        ]);
     }
 }

@@ -33,11 +33,14 @@ class Reward extends Model
         
         if(!$subscription) return 0; 
 
-        return floor(($subscription->balance / $this->value) * 100);
+        return min(floor(($subscription->balance / $this->value) * 100), 100);
     }
-
 
     public function getIsClaimableAttribute() {
         return $this->percentage_progress >= 100;
+    }
+
+    public function merchant() {
+        return $this->belongsTo(Merchant::class, 'merchant_id', 'id');
     }
 }
