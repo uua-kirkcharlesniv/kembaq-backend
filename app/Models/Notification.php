@@ -10,4 +10,8 @@ class Notification extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function merchant() {
+        return $this->belongsTo(Merchant::class, 'merchant_id', 'id');
+    }
 }

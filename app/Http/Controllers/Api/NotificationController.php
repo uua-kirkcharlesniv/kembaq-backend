@@ -12,4 +12,8 @@ class NotificationController extends Controller
     public function getAllNotifications() {
         return response()->json(['notifications' => Notification::where('user_id', Auth::user()->id)->get()]);
     }
+    
+    public function getAllMessages() {
+        return response()->json(['notifications' => Notification::with('merchant')->where('user_id', Auth::user()->id)->get()]);
+    }
 }

@@ -50,9 +50,12 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('all', [MerchantsController::class, 'getAllMerchants']);
         Route::get('subscribed', [MerchantsController::class, 'fetchAllSubscribedMerchants']);
         Route::get('available', [MerchantsController::class, 'fetchAllAvailableMerchants']);
+        Route::get('{id}/messages', [MerchantsController::class, 'getMerchantMessages']);
+        Route::get('{id}/rewards', [MerchantsController::class, 'getMerchantRewards']);
     });
 
     Route::get('notifications', [NotificationController::class, 'getAllNotifications']);
+    Route::get('messages', [NotificationController::class, 'getAllMessages']);
 });
 
 Route::prefix('qr')->group(function () {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Merchant;
+use App\Models\Message;
+use App\Models\Reward;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -26,5 +28,13 @@ class MerchantsController extends Controller
         });
         
         return response()->json(['available' =>  Merchant::whereNotIn('id', $subscribedIds)->get()]);
+    }
+
+    public function getMerchantMessages(Request $request, $id) {
+        return response()->json(['messages' =>  Message::where('merchant_id', $id)->get()]);
+    }
+
+    public function getMerchantRewards(Request $request, $id) {
+        return response()->json(['rewards' => Reward::where('merchant_id', $id)->get()]);
     }
 }
