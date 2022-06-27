@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Merchant;
+use App\Models\Subscription;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -24,20 +25,17 @@ class EnsureUserHasSubscription
         ]);
 
         $user = User::findOrFail($request->user_id);
-        $walletSlug = $user->id.'-'.$request->merchant_id;
-
-        if(!($user->hasWallet($walletSlug))) {
-            return response('Wallet not found.', 404);
-        }
-
-        $wallet = $user->getWallet($walletSlug);
-
         $merchant = Merchant::findOrFail($request->merchant_id);
-        $merchantWallet = $merchant->wallet;
-
+        $subscription = Subscription::where(['merchant_id' => $request->merchant_id], ['user_id', $request->user_id])->first();
+        if(!$subscription) {
+            $subscription = Subscription::create([
+                'merchant_id' => $request->merchant_id,
+                'user_id' => $request->user_id,
+                'balance' => 0,
+            ]);
+        }
         $request->attributes->add([
-            'user_wallet' => $wallet,
-            'merchant_wallet' => $merchantWallet,
+            'subscription' => $subscription,
             'user' => $user,
             'merchant' => $merchant,
         ]);

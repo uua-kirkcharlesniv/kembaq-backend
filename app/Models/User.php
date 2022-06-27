@@ -45,7 +45,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime'
     ];
 
-    protected $appends = ['name', 'is_merchant_profile_created'];
+    protected $appends = ['name', 'is_merchant_profile_created', 'merchant_id'];
 
     public function getNameAttribute() {
         return $this->first_name . ' ' . $this->last_name;
@@ -53,6 +53,10 @@ class User extends Authenticatable
 
     public function merchants() {
         return $this->belongsToMany(Merchant::class, 'merchant_user', 'user_id', 'merchant_id')->withPivot('role');
+    }
+
+    public function subscriptions() {
+        return $this->hasMany(Subscription::class);
     }
 
     public function getIsMerchantAttribute($value) {
@@ -63,5 +67,13 @@ class User extends Authenticatable
         if($this->is_merchant == 0) return false;
 
         return $this->merchants()->count() > 0;
+    }
+
+    public function getMerchantIdAttribute() {
+        if($this->getIsMerchantProfileCreatedAttribute()) {
+            return $this->merchants()->first()->id;
+        }
+
+        return null;
     }
 }

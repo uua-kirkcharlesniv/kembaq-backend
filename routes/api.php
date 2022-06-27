@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LedgerController;
+use App\Http\Controllers\Api\MerchantsController;
 use App\Http\Controllers\Api\PointsController;
 use App\Http\Controllers\Api\QrController;
 use Illuminate\Http\Request;
@@ -30,12 +32,23 @@ Route::group(['middleware' => ['auth:api']], function () {
         // Route::post('update', [AuthController::class, 'updateProfile']);
     });
 
-});
+    Route::group(['middleware' => ['subscribed']], function () {
+        Route::prefix('points')->group(function () {
+            Route::get('balance', [PointsController::class, 'getBalance']);
+            Route::post('transfer', [PointsController::class, 'depositBalance']);
+        });
+    });
 
-Route::group(['middleware' => ['subscribed']], function () {
-    Route::prefix('points')->group(function () {
-        Route::post('balance', [PointsController::class, 'getBalance']);
-        Route::post('transfer', [PointsController::class, 'depositBalance']);
+    Route::prefix('transactions')->group(function () {
+        Route::get('merchant', [LedgerController::class, 'getTransactionsMerchant']);
+        Route::get('user', [LedgerController::class, 'getTransactionsUser']);
+        Route::get('user-merchant', [LedgerController::class, 'getTransactionsUserMerchant']);
+    });
+
+    Route::prefix('merchants')->group(function () {
+        Route::get('all', [MerchantsController::class, 'getAllMerchants']);
+        Route::get('subscribed', [MerchantsController::class, 'fetchAllSubscribedMerchants']);
+        Route::get('available', [MerchantsController::class, 'fetchAllAvailableMerchants']);
     });
 });
 

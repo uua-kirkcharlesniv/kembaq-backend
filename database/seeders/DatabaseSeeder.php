@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Merchant;
 use App\Models\Message;
+use App\Models\Reward;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +82,15 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'dela Cruz',
             'email' => 'juandelacruz@moveup.app',
             'password' => Hash::make('password'),
+        ]);
+
+        Reward::create([
+            'merchant_id' => $mc->id,
+            'title' => 'Sample reward',
+            'description' => 'Lorem ipsum generic description',
+            'value' => 50,
+            'photo' => 'https://cdn.shopify.com/s/files/1/0580/3245/5858/files/CJ_Fam_Deals.jpg?v=1643830712&width=1080',
+            'valid_until' => Carbon::now()->utc()->addDays(30),
         ]);
     }
 }
