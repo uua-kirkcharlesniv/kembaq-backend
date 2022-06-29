@@ -22,6 +22,7 @@ class AuthController extends Controller
             'first_name' => 'required|max:55',
             'password' => 'required',
             'is_merchant' => 'nullable|boolean',
+            'phone' => 'nullable|string',
         ]);
         $data = [
             'last_name' => $request->input('last_name'),
@@ -32,6 +33,10 @@ class AuthController extends Controller
 
         if($request->has('is_merchant')) {
             $data = array_merge($data, ['is_merchant' => $request->input('is_merchant')]);
+        }
+
+        if($request->has('phone')) {
+            $data = array_merge($data, ['phone' => $request->input('phone')]);
         }
 
         $user = User::create($data);
@@ -49,13 +54,24 @@ class AuthController extends Controller
     public function createMerchantPage(Request $request)
     {
         $request->validate([
-            'phone' => 'required',
-            'logo' => 'required|file',
+            // 'logo' => 'required|file',
             'background_color' => [
                 'required',
                 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
             ],
             'button_color' => [
+                'required',
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'text_color' => [
+                'required',
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'border_color' => [
+                'required',
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'points_color' => [
                 'required',
                 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
             ],
@@ -73,10 +89,12 @@ class AuthController extends Controller
         ]);
 
         $mc = Merchant::create([
-            'mobile_number' => $request->input('phone'),
             'logo' => 'http://assets.stickpng.com/images/62306f7fa39b9e9c515e5925.png',
             'background_color' => $request->input('background_color'),
             'button_color' => $request->input('button_color'),
+            'text_color' => $request->input('text_color'),
+            'border_color' => $request->input('border_color'),
+            'points_color' => $request->input('points_color'),
             'business_address' => $request->input('business_address'),
             'lat' => floatval($request->input('lat')),
             'long' => floatval($request->input('lat')),

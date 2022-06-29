@@ -35,7 +35,10 @@ class MerchantsController extends Controller
     }
 
     public function getMerchantRewards(Request $request, $id) {
-        return response()->json(['rewards' => Reward::where('merchant_id', $id)->get()]);
+        $subscription = Subscription::where(['merchant_id' => $id], ['user_id', Auth::user()->id])->first();
+        $merchant = Merchant::findOrFail($id);
+
+        return response()->json(['rewards' => Reward::where('merchant_id', $id)->get(), 'subscription' => $subscription, 'merchant' => $merchant]);
     }
 
     public function getAllRewards() {
@@ -45,5 +48,9 @@ class MerchantsController extends Controller
         });
         
         return response()->json(['rewards' => Reward::with('merchant')->whereIn('merchant_id', $subscribedIds)->get()]);
+    }
+
+    public function getMerchant(Request $request, $id) {
+        return response()->json(['merchant' => Merchant::with('rewards', 'messages')->findOrFail($id)]);
     }
 }

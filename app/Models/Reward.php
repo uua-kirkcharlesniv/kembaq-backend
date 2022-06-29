@@ -12,7 +12,7 @@ class Reward extends Model
 
     protected $guarded = ['id'];
 
-    protected $appends = ['is_subscribed', 'is_claimable', 'percentage_progress'];
+    protected $appends = ['is_subscribed', 'is_claimable', 'percentage_progress', 'current_balance'];
 
     public function getIsSubscribedAttribute() {
         if(!Auth::check()) {
@@ -24,6 +24,16 @@ class Reward extends Model
         }
 
         return false;
+    }
+
+    public function getCurrentBalanceAttribute() {
+        if(!$this->is_subscribed) return 0;
+
+        $subscription = Subscription::where('user_id', Auth::user()->id)->where('merchant_id', $this->merchant_id)->first();   
+        
+        if(!$subscription) return 0; 
+
+        return $subscription->balance;
     }
 
     public function getPercentageProgressAttribute() {

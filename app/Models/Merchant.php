@@ -21,6 +21,10 @@ class Merchant extends Model
         return $this->hasMany(Reward::class, 'merchant_id', 'id');
     }
 
+    public function messages() {
+        return $this->hasMany(Message::class, 'merchant_id', 'id');
+    }
+
     public function getEarliestExpirationAttribute() {
         if($this->rewards->isEmpty()) return null;
 
