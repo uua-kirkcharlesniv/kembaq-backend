@@ -30,4 +30,20 @@ class Merchant extends Model
 
         return Reward::where('merchant_id', $this->id)->orderBy('valid_until','ASC')->first()->valid_until;
     }
+
+    public function getLogoAttribute($value) {
+        if (filter_var($value, FILTER_VALIDATE_URL) === FALSE) {
+            return asset('storage/'.$value);
+        }
+
+        return $value;
+    }
+    
+    public function getHeroAttribute($value) {
+        if (filter_var($value, FILTER_VALIDATE_URL) === FALSE) {
+            return asset('storage/'.$value);
+        }
+
+        return $value;
+    }
 }

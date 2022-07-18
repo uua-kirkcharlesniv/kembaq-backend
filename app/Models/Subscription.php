@@ -15,4 +15,8 @@ class Subscription extends Model
     public function merchant() {
         return $this->belongsTo(Merchant::class, 'merchant_id', 'id');
     }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

@@ -18,6 +18,11 @@ class MessageController extends Controller
         return view('messages.index')->with(['messages' => Message::where('merchant_id', '=', Auth::user()->merchants()->first()->id)->get()]);
     }
 
+    public function indexJson()
+    {
+        return response()->json(['messages' => Message::where('merchant_id', '=', Auth::user()->merchants()->first()->id)->get()]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -49,7 +54,7 @@ class MessageController extends Controller
             'message' => $request->message
         ]);
 
-        return redirect()->route('marketing.index');
+        return response('Resource created', 200);
     }
 
     /**

@@ -19,6 +19,11 @@ class RewardController extends Controller
         return view('rewards.index')->with('rewards', Reward::where('merchant_id', '=', Auth::user()->merchants()->first()->id)->get());
     }
 
+    public function indexJson()
+    {
+        return response()->json(['rewards' => Reward::where('merchant_id', '=', Auth::user()->merchants()->first()->id)->get()]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

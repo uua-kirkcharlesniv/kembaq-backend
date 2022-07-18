@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Merchant;
+use App\Models\Notification;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -23,12 +26,14 @@ class AuthController extends Controller
             'password' => 'required',
             'is_merchant' => 'nullable|boolean',
             'phone' => 'nullable|string',
+            'notification_token' => 'nullable|string',
         ]);
         $data = [
             'last_name' => $request->input('last_name'),
             'first_name' => $request->input('first_name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'notification_token' => $request->input('notification_token'),
         ];
 
         if($request->has('is_merchant')) {
@@ -53,8 +58,18 @@ class AuthController extends Controller
 
     public function createMerchantPage(Request $request)
     {
+        $user = Auth::user();
+        if($user->is_merchant != 1) {
+            return response('Unauthorized access', 401);
+        }
+
+        if($user->is_merchant_profile_created) {
+            return response('Merchant profile already exists.', 409);
+        }
+
         $request->validate([
-            // 'logo' => 'required|file',
+            'logo' => 'required',
+            'hero' => 'required',
             'background_color' => [
                 'required',
                 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
@@ -88,8 +103,30 @@ class AuthController extends Controller
             'loyalty_value' => 'required|numeric|min:1|max:16777215'
         ]);
 
+        if(is_string($request->logo)) {
+            $logoAsset = base64_decode(substr($request->logo, strpos($request->logo, ',') + 1));
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/logo.png", $logoAsset);
+        } else {
+            $request->validate([
+                'logo' => 'required|image',
+            ]);
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/logo.png", file_get_contents($request->file('logo')));
+        }
+        
+        if(is_string($request->hero)) {
+            $heroAsset = base64_decode(substr($request->hero, strpos($request->hero, ',') + 1));
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/hero.png", $heroAsset);
+        } else {
+            $request->validate([
+                'hero' => 'required|image',
+            ]);
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/hero.png", file_get_contents($request->file('hero')));
+        }
+
+
         $mc = Merchant::create([
-            'logo' => 'http://assets.stickpng.com/images/62306f7fa39b9e9c515e5925.png',
+            'logo' => "merchants/".auth()->user()->id."/logo.png",
+            'hero' => "merchants/".auth()->user()->id."/hero.png",
             'background_color' => $request->input('background_color'),
             'button_color' => $request->input('button_color'),
             'text_color' => $request->input('text_color'),
@@ -112,6 +149,80 @@ class AuthController extends Controller
         return response('Resource created', 200);
     }
 
+    public function updateMerchantPage(Request $request)
+    {
+        $user = Auth::user();
+        if($user->is_merchant != 1) {
+            return response('Unauthorized access', 401);
+        }
+
+        if(!$user->is_merchant_profile_created) {
+            return response('Merchant profile does not exist yet.', 404);
+        }
+
+        $data = $request->validate([
+            'logo' => 'nullable',
+            'hero' => 'nullable',
+            'background_color' => [
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'button_color' => [
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'text_color' => [
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'border_color' => [
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'points_color' => [
+                'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'
+            ],
+            'business_address' => 'string',
+            'lat' => 'string',
+            'long' => 'string',
+            'business_name' => 'string',
+            'category' => [
+                'exists:categories,id'
+            ],
+            'loyalty_type' => 'numeric|in:0,1',
+            'currency' => 'string',
+            'loyalty_value' => 'numeric|min:1|max:16777215'
+        ]);
+
+        if($request->has('logo') && is_string($request->logo)) {
+            $logoAsset = base64_decode(substr($request->logo, strpos($request->logo, ',') + 1));
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/logo.png", $logoAsset);
+            unset($data['logo']);
+            $data = array_merge($data, ["logo" => "merchants/".auth()->user()->id."/logo.png"]);
+        } else if ($request->has('logo')) {
+            $request->validate([
+                'logo' => 'required|image',
+            ]);
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/logo.png", file_get_contents($request->file('logo')));
+            unset($data['logo']);
+            $data = array_merge($data, ["logo" => "merchants/".auth()->user()->id."/logo.png"]);
+        }
+        
+        if($request->has('hero') && is_string($request->hero)) {
+            $heroAsset = base64_decode(substr($request->hero, strpos($request->hero, ',') + 1));
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/hero.png", $heroAsset);
+            unset($data['hero']);
+            $data = array_merge($data, ["hero" => "merchants/".auth()->user()->id."/hero.png"]);
+        } else if ($request->has('hero')) {
+            $request->validate([
+                'hero' => 'required|image',
+            ]);
+            Storage::disk('public')->put("merchants/".auth()->user()->id."/hero.png", file_get_contents($request->file('hero')));
+            unset($data['hero']);
+            $data = array_merge($data, ["hero" => "merchants/".auth()->user()->id."/hero.png"]);
+        }
+
+        Merchant::where('id', Auth::user()->merchants()->first()->id)->update($data);
+
+        return response('Resource updated', 200);
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -126,6 +237,12 @@ class AuthController extends Controller
         }
 
         $user = User::with('merchants', 'merchants.category')->findOrFail(Auth::user()->id);
+        
+        if($request->filled('notification_token')) {
+            $user->update([
+                'notification_token' => $request->notification_token
+            ]);
+        }
 
         if($request->has('is_merchant')) {
             if(($request->boolean('is_merchant') == true && $user->is_merchant == 0) || $request->boolean('is_merchant') == false && $user->is_merchant == 1) {

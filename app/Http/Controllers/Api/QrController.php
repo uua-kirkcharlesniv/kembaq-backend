@@ -11,6 +11,34 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class QrController extends Controller
 {
+    public function generateRewardQr(Request $request) {
+        if(!$request->headers->has('user_id')) {
+            return response()->json([
+                'message' => 'User ID is required.'
+            ], 400);
+        }
+
+        if(!$request->headers->has('merchant_id')) {
+            return response()->json([
+                'message' => 'Merchant ID is required.'
+            ], 400);
+        }
+
+        if(!$request->headers->has('reward_id')) {
+            return response()->json([
+                'message' => 'Reward ID is required.'
+            ], 400);
+        }
+
+        $message = 'reward_id:'.$request->header('reward_id').
+                    ';user_id:'.$request->header('user_id').
+                    ';merchant_id:'.$request->header('merchant_id');
+        $checksum = crc32($message);
+        $message = $message.';checksum:'.$checksum;
+        
+        return response(QrCode::format('svg')->size(800)->format('png')->style('round')->errorCorrection('L')->generate($message));
+    }
+
     public function generateQrCodeUser(Request $request) {
         if(!$request->headers->has('user_id')) {
             return response()->json([
@@ -30,7 +58,7 @@ class QrController extends Controller
     public function generateQrCodeMerchant(Request $request) {
         if(!$request->headers->has('user_id')) {
             return response()->json([
-                'message' => 'Merchant ID is required.'
+                'message' => 'User ID is required.'
             ], 400);
         }
 
@@ -47,7 +75,7 @@ class QrController extends Controller
         $checksum = crc32($message);
         $message .= ';checksum:'.$checksum;
         
-        return response(QrCode::size(800)->format('png')->errorCorrection('H')->merge($merchant->logo, .3, true)->generate($message));
+        return response(QrCode::size(800)->format('png')->errorCorrection('M')->generate($message));
     }
 
     public function validateQrCodeUser(Request $request) {
@@ -69,11 +97,11 @@ class QrController extends Controller
         $currentTimeUTC = Carbon::now('UTC');
         $expiryDate = Carbon::createFromTimestampMsUTC($request->expires_at);
         
-        if($currentTimeUTC->greaterThanOrEqualTo($expiryDate)) {
-            return response()->json([
-                'message' => 'Code already expired.'
-            ], 400);
-        }
+        // if($currentTimeUTC->greaterThanOrEqualTo($expiryDate)) {
+        //     return response()->json([
+        //         'message' => 'Code already expired.'
+        //     ], 400);
+        // }
 
         return response()->json([
             'OK.'
@@ -99,11 +127,11 @@ class QrController extends Controller
         $currentTimeUTC = Carbon::now('UTC');
         $expiryDate = Carbon::createFromTimestampMsUTC($request->expires_at);
         
-        if($currentTimeUTC->greaterThanOrEqualTo($expiryDate)) {
-            return response()->json([
-                'message' => 'Code already expired.'
-            ], 400);
-        }
+        // if($currentTimeUTC->greaterThanOrEqualTo($expiryDate)) {
+        //     return response()->json([
+        //         'message' => 'Code already expired.'
+        //     ], 400);
+        // }
 
         return response()->json([
             'OK.'
