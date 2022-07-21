@@ -64,9 +64,11 @@ class EmployeeController extends Controller
         if(!Auth::user()->is_merchant || !Auth::user()->is_merchant_profile_created) {
             return response('You are not authorized or permitted to do this action', 401);
         }
+
+        $user = Auth::user();
         
         $data = $request->validate([
-            'email' => 'email|nullable|unique:users',
+            'email' => 'email|nullable|unique:users,email,'.$user->id,
             'last_name' => 'nullable|max:55',
             'first_name' => 'nullable|max:55',
             'password' => 'nullable|string',

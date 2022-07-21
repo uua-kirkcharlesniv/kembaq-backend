@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\LedgerController;
 use App\Http\Controllers\Api\MerchantsController;
@@ -34,6 +35,7 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     Route::prefix('profile')->group(function () {
         Route::post('change-password', [AuthController::class, 'changePassword']);
+        Route::post('update', [AuthController::class, 'updateProfile']);
     });
 
     Route::group(['middleware' => ['subscribed']], function () {
@@ -72,6 +74,7 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     Route::post('claim', [ApiRewardController::class, 'claimReward']);
     Route::get('claim', [ApiRewardController::class, 'getClaimedRewards']);
+    Route::get('dashboard', [DashboardController::class, 'getStats']);
 
     Route::prefix('employees')->group(function () {
         Route::get('', [EmployeeController::class, 'getEmployees']);

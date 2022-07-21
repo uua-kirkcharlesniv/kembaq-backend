@@ -289,4 +289,24 @@ class AuthController extends Controller
             'message' => 'Successfully changed your password.'
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $data = $request->validate([
+            'email' => 'email|nullable|unique:users,email,'.$user->id,
+            'last_name' => 'nullable|max:55',
+            'first_name' => 'nullable|max:55',
+            'password' => 'nullable|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        User::where('id', $user->id)->update(array_filter($data));
+
+        return response()->json([
+            'message' => 'Successfully updated profile.',
+            'data' => User::findOrFail($user->id),
+        ]);
+    }
 }
