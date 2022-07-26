@@ -68,7 +68,7 @@ class EmployeeController extends Controller
         $user = Auth::user();
         
         $data = $request->validate([
-            'email' => 'email|nullable|unique:users,email,'.$user->id,
+            'email' => 'email|nullable|unique:users,email,'.$id,
             'last_name' => 'nullable|max:55',
             'first_name' => 'nullable|max:55',
             'password' => 'nullable|string',
