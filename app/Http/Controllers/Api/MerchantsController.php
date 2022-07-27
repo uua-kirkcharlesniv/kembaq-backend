@@ -68,7 +68,9 @@ class MerchantsController extends Controller
 
     public function getMerchant(Request $request, $id)
     {
-        return response()->json(['merchant' => Merchant::with('rewards', 'messages')->findOrFail($id)]);
+        $user = User::findOrFail($id);
+        $merchantId = Auth::user()->merchants()->first()->id;
+        return response()->json(['merchant' => Merchant::with('rewards', 'messages')->findOrFail($merchantId)]);
     }
 
     public function createMessage(Request $request)
