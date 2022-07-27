@@ -32,6 +32,6 @@ class LedgerController extends Controller
             'merchant_id' => 'required|exists:merchants,id'
         ]);
 
-        return response()->json(['transactions' => Ledger::where(['user_id' => Auth::user()->id], ['merchant_id' => $request->merchant_id])->get()]);
+        return response()->json(['transactions' => Ledger::where(['user_id' => Auth::user()->id, 'merchant_id' => $request->merchant_id])->get()]);
     }
 }
