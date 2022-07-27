@@ -46,7 +46,7 @@ class MerchantsController extends Controller
 
     public function getMerchantRewards(Request $request, $id)
     {
-        $subscription = Subscription::where(['merchant_id' => $id, 'user_id', Auth::user()->id])->first();
+        $subscription = Subscription::where(['merchant_id' => $id, 'user_id' => Auth::user()->id])->first();
         $merchant = Merchant::findOrFail($id);
 
         return response()->json(['rewards' => Reward::with('merchant')->where('merchant_id', $id)->get(), 'subscription' => $subscription, 'merchant' => $merchant]);
