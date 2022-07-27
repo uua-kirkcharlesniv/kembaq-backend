@@ -12,27 +12,27 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class QrController extends Controller
 {
     public function generateRewardQr(Request $request) {
-        if(!$request->headers->has('user_id')) {
-            return response()->json([
-                'message' => 'User ID is required.'
-            ], 400);
-        }
+        // if(!$request->headers->has('user_id')) {
+        //     return response()->json([
+        //         'message' => 'User ID is required.'
+        //     ], 400);
+        // }
 
-        if(!$request->headers->has('merchant_id')) {
-            return response()->json([
-                'message' => 'Merchant ID is required.'
-            ], 400);
-        }
+        // if(!$request->headers->has('merchant_id')) {
+        //     return response()->json([
+        //         'message' => 'Merchant ID is required.'
+        //     ], 400);
+        // }
 
-        if(!$request->headers->has('reward_id')) {
-            return response()->json([
-                'message' => 'Reward ID is required.'
-            ], 400);
-        }
+        // if(!$request->query('reward_id')) {
+        //     return response()->json([
+        //         'message' => 'Reward ID is required.'
+        //     ], 400);
+        // }
 
-        $message = 'reward_id:'.$request->header('reward_id').
-                    ';user_id:'.$request->header('user_id').
-                    ';merchant_id:'.$request->header('merchant_id');
+        $message = 'reward_id:'.$request->query('reward_id').
+                    ';user_id:'.$request->query('user_id').
+                    ';merchant_id:'.$request->query('merchant_id');
         $checksum = crc32($message);
         $message = $message.';checksum:'.$checksum;
         
@@ -56,22 +56,22 @@ class QrController extends Controller
     }
 
     public function generateQrCodeMerchant(Request $request) {
-        if(!$request->headers->has('user_id')) {
-            return response()->json([
-                'message' => 'User ID is required.'
-            ], 400);
-        }
+        // if(!$request->headers->has('user_id')) {
+        //     return response()->json([
+        //         'message' => 'User ID is required.'
+        //     ], 400);
+        // }
 
-        if(!$request->headers->has('value')) {
-            return response()->json([
-                'message' => 'Value is required.'
-            ], 400);
-        }
+        // if(!$request->headers->has('value')) {
+        //     return response()->json([
+        //         'message' => 'Value is required.'
+        //     ], 400);
+        // }
 
         $validity = Carbon::now('UTC')->addSeconds(180);
-        $merchant = Merchant::findOrFail($request->header('user_id'));
+        $merchant = Merchant::findOrFail($request->query('user_id'));
         $message = 'id:'.$merchant->id.';expires_at:'.$validity->getTimestampMs();
-        $message .= ';value:'.$request->header('value');
+        $message .= ';value:'.$request->query('value');
         $checksum = crc32($message);
         $message .= ';checksum:'.$checksum;
         
