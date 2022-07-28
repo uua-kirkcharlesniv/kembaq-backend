@@ -223,7 +223,10 @@ class AuthController extends Controller
 
         Merchant::where('id', Auth::user()->merchants()->first()->id)->update($data);
 
-        return response('Resource updated', 200);
+        return response()->json([
+            'data' => $data,
+            'merchant' => Merchant::findOrFail(Auth::user()->merchants()->first()->id)
+        ]);
     }
 
     public function login(Request $request)
