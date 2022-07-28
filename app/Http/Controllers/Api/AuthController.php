@@ -191,7 +191,7 @@ class AuthController extends Controller
             'loyalty_value' => 'numeric|min:1|max:16777215'
         ]);
 
-        $filename = "merchants/" . auth()->user()->id . '/hero/' . Carbon::now()->format('YmdHms') . ".png";
+        $filename = "merchants/" . auth()->user()->id . '/logo/' . Carbon::now()->format('YmdHms') . ".png";
         if($request->has('logo') && is_string($request->logo)) {
             $logoAsset = base64_decode(substr($request->logo, strpos($request->logo, ',') + 1));
             Storage::disk('public')->put($filename, $logoAsset);
@@ -206,18 +206,19 @@ class AuthController extends Controller
             $data = array_merge($data, ["logo" => $filename]);
         }
         
+        $filename = "merchants/" . auth()->user()->id . '/hero/' . Carbon::now()->format('YmdHms') . ".png";
         if($request->has('hero') && is_string($request->hero)) {
             $heroAsset = base64_decode(substr($request->hero, strpos($request->hero, ',') + 1));
-            Storage::disk('public')->put("merchants/".auth()->user()->id."/hero.png", $heroAsset);
+            Storage::disk('public')->put($filename, $heroAsset);
             unset($data['hero']);
-            $data = array_merge($data, ["hero" => "merchants/".auth()->user()->id."/hero.png"]);
+            $data = array_merge($data, ["hero" => $filename]);
         } else if ($request->has('hero')) {
             $request->validate([
                 'hero' => 'required|image',
             ]);
-            Storage::disk('public')->put("merchants/".auth()->user()->id."/hero.png", file_get_contents($request->file('hero')));
+            Storage::disk('public')->put($filename, file_get_contents($request->file('hero')));
             unset($data['hero']);
-            $data = array_merge($data, ["hero" => "merchants/".auth()->user()->id."/hero.png"]);
+            $data = array_merge($data, ["hero" => $filename]);
         }
 
         Merchant::where('id', Auth::user()->merchants()->first()->id)->update($data);
