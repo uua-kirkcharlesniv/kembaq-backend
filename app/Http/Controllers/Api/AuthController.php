@@ -206,19 +206,19 @@ class AuthController extends Controller
             $data = array_merge($data, ["logo" => $filename]);
         }
         
-        $filename = "merchants/" . auth()->user()->id . '/hero/' . Carbon::now()->format('YmdHms') . ".png";
+        $heroFn = "merchants/" . auth()->user()->id . '/hero/' . Carbon::now()->format('YmdHms') . ".png";
         if($request->has('hero') && is_string($request->hero)) {
             $heroAsset = base64_decode(substr($request->hero, strpos($request->hero, ',') + 1));
-            Storage::disk('public')->put($filename, $heroAsset);
+            Storage::disk('public')->put($heroFn, $heroAsset);
             unset($data['hero']);
-            $data = array_merge($data, ["hero" => $filename]);
+            $data = array_merge($data, ["hero" => $heroFn]);
         } else if ($request->has('hero')) {
             $request->validate([
                 'hero' => 'required|image',
             ]);
             Storage::disk('public')->put($filename, file_get_contents($request->file('hero')));
             unset($data['hero']);
-            $data = array_merge($data, ["hero" => $filename]);
+            $data = array_merge($data, ["hero" => $heroFn]);
         }
 
         Merchant::where('id', Auth::user()->merchants()->first()->id)->update($data);
