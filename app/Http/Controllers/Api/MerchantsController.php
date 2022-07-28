@@ -83,6 +83,7 @@ class MerchantsController extends Controller
             'link' => 'required|min:3|max:191',
             'message' => 'required',
             'photo' => 'required',
+            'type' => 'nullable',
         ]);
 
         $filename = "messages/" . auth()->user()->id . "/" . Carbon::now()->format('YmdHms') . ".png";
@@ -102,6 +103,7 @@ class MerchantsController extends Controller
             'link' => $request->link,
             'message' => $request->message,
             'photo' => $filename,
+            'type' => $request->type ?? 1,
         ]);
 
         return response()->json([
