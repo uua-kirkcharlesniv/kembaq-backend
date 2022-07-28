@@ -43,7 +43,7 @@ class MessageController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'link' => 'required',
+            'link' => 'required|min:3|max:255',
             'message' => 'required'
         ]);
 

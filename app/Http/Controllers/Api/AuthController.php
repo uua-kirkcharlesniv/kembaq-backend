@@ -10,6 +10,7 @@ use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -190,18 +191,19 @@ class AuthController extends Controller
             'loyalty_value' => 'numeric|min:1|max:16777215'
         ]);
 
+        $filename = "merchants/" . auth()->user()->id . '/hero/' . Carbon::now()->format('YmdHms') . ".png";
         if($request->has('logo') && is_string($request->logo)) {
             $logoAsset = base64_decode(substr($request->logo, strpos($request->logo, ',') + 1));
-            Storage::disk('public')->put("merchants/".auth()->user()->id."/logo.png", $logoAsset);
+            Storage::disk('public')->put($filename, $logoAsset);
             unset($data['logo']);
-            $data = array_merge($data, ["logo" => "merchants/".auth()->user()->id."/logo.png"]);
+            $data = array_merge($data, ["logo" => $filename]);
         } else if ($request->has('logo')) {
             $request->validate([
                 'logo' => 'required|image',
             ]);
-            Storage::disk('public')->put("merchants/".auth()->user()->id."/logo.png", file_get_contents($request->file('logo')));
+            Storage::disk('public')->put($filename, file_get_contents($request->file('logo')));
             unset($data['logo']);
-            $data = array_merge($data, ["logo" => "merchants/".auth()->user()->id."/logo.png"]);
+            $data = array_merge($data, ["logo" => $filename]);
         }
         
         if($request->has('hero') && is_string($request->hero)) {

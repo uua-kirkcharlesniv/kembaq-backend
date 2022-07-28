@@ -28,6 +28,7 @@ class MessageListener
     public function handle($event)
     {
         $message = $event->message;
+        if($message->type == 0) return;
         $subscriptions = Subscription::with('user')->where('merchant_id', $message->merchant_id)->get();
         $ids = [];
         foreach ($subscriptions as $key => $subscription) {

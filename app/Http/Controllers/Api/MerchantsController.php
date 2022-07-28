@@ -80,7 +80,7 @@ class MerchantsController extends Controller
         }
         $request->validate([
             'title' => 'required',
-            'link' => 'required',
+            'link' => 'required|min:3|max:191',
             'message' => 'required',
             'photo' => 'required',
         ]);

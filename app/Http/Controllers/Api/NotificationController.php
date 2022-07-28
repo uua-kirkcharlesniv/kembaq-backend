@@ -27,7 +27,7 @@ class NotificationController extends Controller
             return $subscription->merchant_id;
         });
 
-        return response()->json(['messages' => Message::with('merchant')->whereIn('merchant_id', $subscribedIds)->get()]);
+        return response()->json(['messages' => Message::with('merchant')->whereIn('merchant_id', $subscribedIds)->where('type', 0)->get()]);
     }
 
     public function createNotification(Request $request) {
