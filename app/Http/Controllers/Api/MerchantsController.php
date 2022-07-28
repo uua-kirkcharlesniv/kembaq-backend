@@ -41,7 +41,7 @@ class MerchantsController extends Controller
 
     public function getMerchantMessages(Request $request, $id)
     {
-        return response()->json(['messages' =>  Message::where('merchant_id', $id)->get()]);
+        return response()->json(['messages' =>  Message::where('merchant_id', $id)->where('type', '0')->get()]);
     }
 
     public function getMerchantRewards(Request $request, $id)
