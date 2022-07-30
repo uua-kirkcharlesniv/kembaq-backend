@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\RewardController;
 use App\Http\Controllers\SubscriptionController;
@@ -16,18 +17,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('/payment/{modal}/paypal', [PaymentController::class, 'create']);
 });
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Route::group(['middleware' => ['auth']], function () {
-    Route::resource('rewards', RewardController::class);
-    Route::resource('marketing', MessageController::class);
-    Route::resource('transactions', TransactionController::class);
-    Route::resource('users', SubscriptionController::class);
-});
+Route::get('/payment-success', [PaymentController::class, 'success'])->name('paypal-payment-success');

@@ -21,6 +21,7 @@ class PointsController extends Controller
     public function depositBalance(Request $request) {
         request()->validate([
             'value' => 'required|numeric|min:1',
+            'sender_id' => 'nullable|exists:users,id'
         ]);
         
         $value = $request->value;
@@ -35,6 +36,7 @@ class PointsController extends Controller
                 'user_id' => $subscription->user_id,
                 'value' => $value,
                 'running_balance' => $subscription->balance,
+                'sender_id' => $request->sender_id,
             ]);
             Notification::create([
                 'merchant_id' => $subscription->merchant_id,
@@ -46,6 +48,4 @@ class PointsController extends Controller
 
         return response($subscription->balance);
     }
-
-  
 }

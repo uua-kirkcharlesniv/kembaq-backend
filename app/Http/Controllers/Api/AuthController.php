@@ -186,7 +186,6 @@ class AuthController extends Controller
             'category' => [
                 'exists:categories,id'
             ],
-            'loyalty_type' => 'numeric|in:0,1',
             'currency' => 'string',
             'loyalty_value' => 'numeric|min:1|max:16777215'
         ]);

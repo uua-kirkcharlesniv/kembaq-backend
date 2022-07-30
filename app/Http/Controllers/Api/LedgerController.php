@@ -16,7 +16,7 @@ class LedgerController extends Controller
             return response('Unauthorized', 401);
         }
 
-        return response()->json(['transactions' => Ledger::with('user')->where('merchant_id', Auth::user()->merchant_id)->get()]);
+        return response()->json(['transactions' => Ledger::with('user', 'sender')->where('merchant_id', Auth::user()->merchant_id)->get()]);
     }
 
     public function getTransactionsUser(Request $request) {
@@ -24,7 +24,7 @@ class LedgerController extends Controller
             return response('Unauthorized', 401);
         }
 
-        return response()->json(['transactions' => Ledger::with('merchant')->where('user_id', Auth::user()->id)->get()]);
+        return response()->json(['transactions' => Ledger::with('merchant', 'sender')->where('user_id', Auth::user()->id)->get()]);
     }
 
     public function getTransactionsUserMerchant(Request $request) {
@@ -32,6 +32,6 @@ class LedgerController extends Controller
             'merchant_id' => 'required|exists:merchants,id'
         ]);
 
-        return response()->json(['transactions' => Ledger::where(['user_id' => Auth::user()->id, 'merchant_id' => $request->merchant_id])->get()]);
+        return response()->json(['transactions' => Ledger::with('merchant', 'user', 'sender')->where(['user_id' => Auth::user()->id, 'merchant_id' => $request->merchant_id])->get()]);
     }
 }
