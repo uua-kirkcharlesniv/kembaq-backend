@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Claim;
 use App\Models\Merchant;
+use App\Models\MerchantUser;
 use App\Models\Notification;
 use App\Models\Reward;
 use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +28,7 @@ class RewardController extends Controller
             $subscription = Subscription::where('user_id', $data['user_id'])->where('merchant_id', $data['merchant_id'])->firstOrFail();
             $reward = Reward::where('merchant_id', $data['merchant_id'])->where('id', $data['reward_id'])->firstOrFail();
             $merchant = Merchant::findOrFail($data['merchant_id']);
+            $user = User::findOrFail($data['user_id']);
 
             if($subscription->balance >= $reward->value) {
                 Claim::create([
@@ -40,6 +43,13 @@ class RewardController extends Controller
                     'user_id' => $data['user_id'],
                     'title' => 'Claimed a reward from ' . $merchant->business_name,
                     'message' => 'You have successfully claimed ' . $reward->title . '! Scan more QR Codes to earn more rewards.'
+                ]);
+                $merchantUser = MerchantUser::with('user')->where('merchant_id', $merchant->id)->first();
+                Notification::create([
+                    'merchant_id' => $data['merchant_id'],
+                    'user_id' => $merchantUser->user->id,
+                    'title' => 'Reward Claimed',
+                    'message' => $user->first_name . ' ' . $user->last_name . ' have successfully claimed ' . $reward->title . '.'
                 ]);
 
                 return response()->json(['message' => 'Operation success'], 200);

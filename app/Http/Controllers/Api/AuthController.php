@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Merchant;
 use App\Models\Notification;
+use App\Models\Payment;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -147,6 +148,13 @@ class AuthController extends Controller
             ['merchant_id' => $mc->id, 'user_id' => auth()->user()->id, 'role' => 'admin']
         ]);
 
+        Payment::create([
+            'merchant_id' => $mc->id,
+            'type' => 0,
+            'recurring' => 0,
+            'amount_paid' => '0',
+        ]);
+
         return response('Resource created', 200);
     }
 
@@ -241,7 +249,7 @@ class AuthController extends Controller
             return response()->json(['data' => 'Invalid Credentials'], 422);
         }
 
-        $user = User::with('merchants', 'merchants.category')->findOrFail(Auth::user()->id);
+        $user = User::with('merchants', 'merchants.category', 'merchants.payments')->findOrFail(Auth::user()->id);
         
         if($request->filled('notification_token')) {
             $user->update([

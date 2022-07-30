@@ -46,4 +46,8 @@ class Merchant extends Model
 
         return $value;
     }
+
+    public function payments() {
+        return $this->hasMany(Payment::class, 'merchant_id', 'id');
+    }
 }
