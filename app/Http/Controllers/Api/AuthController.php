@@ -249,7 +249,7 @@ class AuthController extends Controller
             return response()->json(['data' => 'Invalid Credentials'], 422);
         }
 
-        $user = User::with('merchants', 'merchants.category', 'merchants.payments')->findOrFail(Auth::user()->id);
+        $user = User::with('merchants', 'merchants.category')->findOrFail(Auth::user()->id);
         
         if($request->filled('notification_token')) {
             $user->update([

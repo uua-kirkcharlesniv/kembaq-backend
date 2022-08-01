@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Merchant;
 use App\Models\Message;
+use App\Models\Payment;
 use App\Models\Reward;
 use App\Models\Subscription;
 use App\Models\User;
@@ -219,5 +220,22 @@ class MerchantsController extends Controller
         unset($data['photo']);
         $reward->update(array_filter($data));
         return response('Resource updated', 200);
+    }
+
+    public function deleteCustomer(Request $request, $id)
+    {
+        $merchantId = Auth::user()->merchants()->first()->id;
+        Subscription::where('merchant_id', $merchantId)->where('user_id', $id)->delete();
+
+        return response('Resource deleted', 200);
+    }
+
+    public function getPayments(Request $request)
+    {
+        $merchantId = Auth::user()->merchants()->first()->id;
+
+        return response()->json([
+            'payments' => Payment::where('merchant_id', $merchantId)->get()
+        ]);
     }
 }

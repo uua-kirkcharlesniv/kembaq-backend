@@ -31,13 +31,14 @@ class PointsController extends Controller
         DB::transaction(function () use ($subscription, $value, $request) {
             DB::table('subscriptions')->where('id', $subscription->id)->increment('balance', $value);
             $subscription->refresh();
+            $merchantUser = MerchantUser::with('user')->where('merchant_id', $subscription->merchant_id)->first();
             Ledger::create([
                 'subscription_id' => $subscription->id,
                 'merchant_id' => $subscription->merchant_id,
                 'user_id' => $subscription->user_id,
                 'value' => $value,
                 'running_balance' => $subscription->balance,
-                'sender_id' => $request->sender_id,
+                'sender_id' => $request->sender_id ?? $merchantUser->user->id,
             ]);
             Notification::create([
                 'merchant_id' => $subscription->merchant_id,
@@ -45,7 +46,6 @@ class PointsController extends Controller
                 'title' => $request->get('merchant')->loyalty_type == 0 ? 'Stamps earned' : 'Points earned',
                 'message' => 'You have received ' . $value . ($request->get('merchant')->loyalty_type == 0 ? ' stamp(s) ' : ' point(s) ') . 'from ' . $request->get('merchant')->business_name . '. Your current running balance is ' . $subscription->balance . '.',
             ]);
-            $merchantUser = MerchantUser::with('user')->where('merchant_id', $subscription->merchant_id)->first();
             if($request->filled('sender_id') && $merchantUser->user->id != $request->sender_id) {
                 Notification::create([
                     'merchant_id' => $subscription->merchant_id,

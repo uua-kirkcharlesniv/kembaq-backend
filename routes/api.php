@@ -66,6 +66,10 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::delete('reward/{id}', [MerchantsController::class, 'deleteReward']);
     Route::post('message/{id}', [MerchantsController::class, 'updateMessage']);
     Route::post('reward/{id}', [MerchantsController::class, 'updateReward']);
+    Route::delete('customers/{id}', [MerchantsController::class, 'deleteCustomer']);
+    Route::delete('customer/{id}', [MerchantsController::class, 'deleteCustomer']);
+
+    Route::get('payments', [MerchantsController::class, 'getPayments']);
     
     Route::post('notification', [NotificationController::class, 'createNotification']);
     Route::get('notifications', [NotificationController::class, 'getAllNotifications']);

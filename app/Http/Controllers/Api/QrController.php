@@ -70,10 +70,12 @@ class QrController extends Controller
 
         $validity = Carbon::now('UTC')->addSeconds(180);
         $merchant = Merchant::findOrFail($request->query('user_id'));
+        $senderId = $request->query('sender_id');
         $message = 'id:'.$merchant->id.';expires_at:'.$validity->getTimestampMs();
         $message .= ';value:'.$request->query('value');
         $checksum = crc32($message);
         $message .= ';checksum:'.$checksum;
+        $message .= ';sender_id:'.$senderId;
         
         return response(QrCode::size(800)->format('png')->errorCorrection('M')->generate($message));
     }
