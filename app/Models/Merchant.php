@@ -11,7 +11,7 @@ class Merchant extends Model
 
     protected $guarded = ['id'];
 
-    protected $appends = [ 'earliest_expiration'];
+    protected $appends = ['earliest_expiration', 'admin'];
 
     public function category() {
         return $this->belongsTo(Category::class, 'category', 'id');
@@ -23,6 +23,10 @@ class Merchant extends Model
 
     public function messages() {
         return $this->hasMany(Message::class, 'merchant_id', 'id');
+    }
+    
+    public function getAdminAttribute() {
+        return User::find(MerchantUser::where('merchant_id', $this->id)->where('role', 'admin')->first()->user_id);
     }
 
     public function getEarliestExpirationAttribute() {

@@ -102,7 +102,8 @@ class AuthController extends Controller
             ],
             'loyalty_type' => 'required|numeric|in:0,1',
             'currency' => 'required|string',
-            'loyalty_value' => 'required|numeric|min:1|max:16777215'
+            'loyalty_value' => 'required|numeric|min:1|max:16777215',
+            'stamp_index' => 'required|numeric',
         ]);
 
         if(is_string($request->logo)) {
@@ -142,6 +143,7 @@ class AuthController extends Controller
             'loyalty_type' => $request->input('loyalty_type'),
             'currency' => $request->input('currency'),
             'loyalty_value' => $request->input('loyalty_value'),
+            'stamp_index' => $request->input('stamp_index'),
         ]);
 
         DB::table('merchant_user')->insert([
@@ -195,7 +197,8 @@ class AuthController extends Controller
                 'exists:categories,id'
             ],
             'currency' => 'string',
-            'loyalty_value' => 'numeric|min:1|max:16777215'
+            'loyalty_value' => 'numeric|min:1|max:16777215',
+            'stamp_index' => 'numeric',
         ]);
 
         $filename = "merchants/" . auth()->user()->id . '/logo/' . Carbon::now()->format('YmdHms') . ".png";
