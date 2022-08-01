@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [AuthController::class, 'register']);
 Route::get('categories', [AuthController::class, 'getCategories']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('/export-merchants', [ExportController::class, 'exportMerchants']);
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('merchant/profile/create', [AuthController::class, 'createMerchantPage']);
