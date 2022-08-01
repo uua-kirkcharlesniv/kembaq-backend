@@ -24,7 +24,7 @@
             <td>{{ $merchant->id }}</td>
             <td>{{ $merchant->business_name }}</td>
             <td>{{ $merchant->business_address }}</td>
-            <td>{{ $merchant->category }}</td>
+            <td>{{ $merchant->category()->first()->name }}</td>
             <td>{{ $merchant->created_at }}</td>
             <td>{{ $merchant->logo }}</td>
             <td>{{ $merchant->hero }}</td>
